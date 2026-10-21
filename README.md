@@ -88,7 +88,7 @@ npm run test:sites
 
 `test:sites` проверяет вспомогательную упаковку статических файлов. Основное приложение запускается через Compose; одна статическая публикация фронтенда не заменяет Python API и PostgreSQL.
 
-GitHub Actions запускает тесты на PostgreSQL и сборку при push / pull request. Фактические локальные проверки и ограничения среды записаны в [docs/verification.md](docs/verification.md).
+GitHub Actions запускает тесты на PostgreSQL и сборку при push / pull request. [Первый контейнерный прогон прошёл](https://github.com/RomaNaybert/sostav-finclub/actions/runs/39583383521). Фактические локальные проверки и ограничения среды записаны в [docs/verification.md](docs/verification.md).
 
 ## API
 
