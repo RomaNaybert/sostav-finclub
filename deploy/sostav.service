@@ -1,0 +1,20 @@
+[Unit]
+Description=Sostav Finclub API
+After=network.target postgresql.service
+
+[Service]
+User=sostav
+Group=sostav
+WorkingDirectory=/opt/sostav/current/backend
+EnvironmentFile=/etc/sostav.env
+ExecStart=/opt/sostav/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8181 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=250M
+
+[Install]
+WantedBy=multi-user.target

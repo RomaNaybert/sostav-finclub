@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: sostav
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sostav-local-demo}
+      POSTGRES_DB: sostav
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U sostav -d sostav]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://sostav:${POSTGRES_PASSWORD:-sostav-local-demo}@db:5432/sostav
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:4181}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      COOKIE_PATH: ${COOKIE_PATH:-/}
+      SEED_DEMO: ${SEED_DEMO:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  web:
+    build: ./frontend
+    ports:
+      - '127.0.0.1:4181:80'
+    depends_on:
+      api:
+        condition: service_healthy
+  test-db:
+    image: postgres:18-alpine
+    profiles: [test]
+    environment:
+      POSTGRES_USER: sostav
+      POSTGRES_PASSWORD: test-only
+      POSTGRES_DB: sostav_test
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U sostav -d sostav_test]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+  tests:
+    build: ./backend
+    profiles: [test]
+    environment:
+      TEST_DATABASE_URL: postgresql+psycopg://sostav:test-only@test-db:5432/sostav_test
+    depends_on:
+      test-db:
+        condition: service_healthy
+    command: [python, -m, pytest, -q, tests]
+volumes:
+  postgres_data:

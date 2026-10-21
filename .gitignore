@@ -1,0 +1,15 @@
+.venv/
+node_modules/
+**/node_modules/
+**/dist/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.local-postgres/
+.scratch/
+.DS_Store
+*.log
+test-sostav.sqlite
+design/generated-originals/
+.ruff_cache/

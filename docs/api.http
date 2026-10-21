@@ -1,0 +1,46 @@
+@base = http://localhost:8000
+# The REST client must retain cookies between requests.
+
+### Войти как Мария
+POST {{base}}/api/auth/login
+Content-Type: application/json
+X-Sostav-Request: 1
+
+{"email":"maria@demo.local","password":"Demo2026!"}
+
+### Лента
+GET {{base}}/api/publications?kind=startup&q=Python
+
+### Создать публикацию (для нового объявления меняйте request_id)
+POST {{base}}/api/publications
+Content-Type: application/json
+X-Sostav-Request: 1
+
+{"request_id":"b77b6399-c8f4-438e-971f-65ed284e4a5a","kind":"startup","project":"Новый проект","title":"Ищем Python-разработчика","description":"Собираем команду для полезного студенческого сервиса. Присоединяйтесь к разработке первого прототипа.","roles":"Python, FastAPI","commitment":"5–10 ч / неделю","location":"Удалённо","reward":"Доля в проекте","status":"active"}
+
+### Отклик на Finflow от Марии
+POST {{base}}/api/publications/1/applications
+Content-Type: application/json
+X-Sostav-Request: 1
+
+{"message":"Привет! Хочу помочь с продуктовым дизайном и исследованием пользователей."}
+
+### Отправленные отклики
+GET {{base}}/api/applications?direction=sent
+
+### Войти как автор Finflow
+POST {{base}}/api/auth/login
+Content-Type: application/json
+X-Sostav-Request: 1
+
+{"email":"alex@demo.local","password":"Demo2026!"}
+
+### Полученные отклики
+GET {{base}}/api/applications?direction=received
+
+### Принять отклик (подставьте id из предыдущего ответа)
+PATCH {{base}}/api/applications/1
+Content-Type: application/json
+X-Sostav-Request: 1
+
+{"status":"accepted"}
